@@ -4,6 +4,24 @@
 #include "graphics.h"
 #include <iostream>
 
+int t = 10;
+int x = 0;
+int y = 3;
+int dirX = +1;
+int dirY = 0;
+
+DWORD WINAPI render(LPVOID arg)
+{
+    Graphics *g = (Graphics *)arg;
+    while (true)
+    {
+        g->clearBuffer();
+        g->fillRect(x += dirX, y += dirY, 1, 1);
+        g->render();
+        Sleep(500);
+    }
+}
+
 int main(void)
 {
     HANDLE hStdin, hStdout, hNewScreenBuffer;
@@ -42,13 +60,12 @@ int main(void)
 
     Graphics g(hNewScreenBuffer, 40, 60);
 
-    int t = 10;
-    int x = 0;
-    int y = 3;
-    int dirX = +1;
-    int dirY = 0;
+    bool running = true;
 
-    for (;;)
+    DWORD threadId;
+    HANDLE thread = CreateThread(NULL, 0, render, &g, 0, &threadId);
+
+    while (running)
     {
         ReadConsoleInput(hStdin, &irec, 1, &cc);
         if (irec.EventType == KEY_EVENT && ((KEY_EVENT_RECORD &)irec.Event).bKeyDown)
@@ -73,21 +90,12 @@ int main(void)
                 dirX = 1;
                 dirY = 0;
                 break;
+            case VK_ESCAPE:
+                running = false;
+                break;
             }
-
-            g.clearBuffer();
-            g.fillRect(x += dirX, y += dirY, 1, 1);
-            g.render();
         }
     }
-
-    // while (t--)
-    // {
-    //     g.clearBuffer();
-    //     g.fillRect(x++, 3, 1, 1);
-    //     g.render();
-    //     Sleep(100);
-    // }
 
     // Restore the original active screen buffer.
 
