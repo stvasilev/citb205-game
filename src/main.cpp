@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <iostream>
 
+using std::cerr;
+using std::endl;
+
 class Graphics
 {
 public:
@@ -9,7 +12,10 @@ public:
     {
         rows = logicalRows;
         cols = logicalCols * 2;
-        buffer = new CHAR_INFO[rows * cols]{};
+
+        buffer = new CHAR_INFO[rows * cols];
+        clearBuffer();
+
         coordBufSize.Y = rows;
         coordBufSize.X = cols;
 
@@ -23,21 +29,34 @@ public:
     }
     void fillPixel(int x, int y)
     {
-        buffer[y * cols + 2*x].Char.AsciiChar = buffer[y * cols + 2*x+1].Char.AsciiChar = ' ';
-        buffer[y * cols + 2*x].Attributes = buffer[y * cols + 2*x+1].Attributes = BACKGROUND_GREEN;
+        buffer[y * cols + 2 * x].Char.AsciiChar = buffer[y * cols + 2 * x + 1].Char.AsciiChar = ' ';
+        buffer[y * cols + 2 * x].Attributes = buffer[y * cols + 2 * x + 1].Attributes = BACKGROUND_GREEN;
     }
 
     void fillRect(int topLeftX, int topLeftY, int width, int height)
     {
-        for (int x = topLeftX; x < topLeftX+width; x++) {
-            for (int y = topLeftY; y < topLeftY + height; y++) {
+        for (int x = topLeftX; x < topLeftX + width; x++)
+        {
+            for (int y = topLeftY; y < topLeftY + height; y++)
+            {
                 fillPixel(x, y);
             }
         }
     }
 
+    void clearBuffer()
+    {
+        memset(buffer, 0, rows * cols * sizeof(buffer));
+    }
+
     bool render()
     {
+        cerr << endl << "----------------" << endl;
+        for (int i=0; i<rows*cols; i++) {
+            cerr << (int)buffer[i].Char.AsciiChar;
+        }
+        cerr << endl << "----------------" << endl;
+
         return WriteConsoleOutput(
             hNewScreenBuffer, // screen buffer to write to
             buffer,           // buffer to copy from
@@ -89,20 +108,16 @@ int main(void)
     }
 
     Graphics g(hNewScreenBuffer, 40, 60);
-    
-    // g.fillPixel(5, 3);
-    // g.fillRect(5, 3, 7, 4);
-    g.fillCircle(10, 10, 5);
 
-
-    fSuccess = g.render();
-    if (!fSuccess)
+    int t = 10;
+    int x = 0;
+    while (t--)
     {
-        printf("SetConsoleActiveScreenBuffer failed - (%d)\n", GetLastError());
-        return 1;
+        g.clearBuffer();
+        g.fillRect(x++, 3, 1, 1);
+        g.render();
+        Sleep(100);
     }
-
-    Sleep(5000);
 
     // Restore the original active screen buffer.
 
