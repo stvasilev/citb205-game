@@ -2,15 +2,20 @@
 #include <stdio.h>
 
 #include "graphics.h"
+#include <iostream>
 
 int main(void)
 {
-    HANDLE hStdout, hNewScreenBuffer;
+    HANDLE hStdin, hStdout, hNewScreenBuffer;
     BOOL fSuccess;
+
+    INPUT_RECORD irec;
+    DWORD cc;
 
     // Get a handle to the STDOUT screen buffer to copy from and
     // create a new screen buffer to copy to.
 
+    hStdin = GetStdHandle(STD_INPUT_HANDLE);
     hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
     hNewScreenBuffer = CreateConsoleScreenBuffer(
         GENERIC_READ | // read/write access
@@ -39,13 +44,50 @@ int main(void)
 
     int t = 10;
     int x = 0;
-    while (t--)
+    int y = 3;
+    int dirX = +1;
+    int dirY = 0;
+
+    for (;;)
     {
-        g.clearBuffer();
-        g.fillRect(x++, 3, 1, 1);
-        g.render();
-        Sleep(100);
+        ReadConsoleInput(hStdin, &irec, 1, &cc);
+        if (irec.EventType == KEY_EVENT && ((KEY_EVENT_RECORD &)irec.Event).bKeyDown)
+        {
+            KEY_EVENT_RECORD krec = (KEY_EVENT_RECORD &)irec.Event;
+
+            switch (krec.wVirtualKeyCode)
+            {
+            case VK_DOWN:
+                dirX = 0;
+                dirY = +1;
+                break;
+            case VK_UP:
+                dirX = 0;
+                dirY = -1;
+                break;
+            case VK_LEFT:
+                dirX = -1;
+                dirY = 0;
+                break;
+            case VK_RIGHT:
+                dirX = 1;
+                dirY = 0;
+                break;
+            }
+
+            g.clearBuffer();
+            g.fillRect(x += dirX, y += dirY, 1, 1);
+            g.render();
+        }
     }
+
+    // while (t--)
+    // {
+    //     g.clearBuffer();
+    //     g.fillRect(x++, 3, 1, 1);
+    //     g.render();
+    //     Sleep(100);
+    // }
 
     // Restore the original active screen buffer.
 

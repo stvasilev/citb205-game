@@ -55,11 +55,11 @@ public:
 
     bool render()
     {
-        cerr << endl << "----------------" << endl;
-        for (int i=0; i<rows*cols; i++) {
-            cerr << (int)buffer[i].Char.AsciiChar;
-        }
-        cerr << endl << "----------------" << endl;
+        // cerr << endl << "----------------" << endl;
+        // for (int i=0; i<rows*cols; i++) {
+        //     cerr << (int)buffer[i].Char.AsciiChar;
+        // }
+        // cerr << endl << "----------------" << endl;
 
         return WriteConsoleOutput(
             hNewScreenBuffer, // screen buffer to write to
