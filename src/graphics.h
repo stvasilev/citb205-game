@@ -31,19 +31,19 @@ public:
         srctWriteRect.Bottom = rows - 1;
         srctWriteRect.Right = cols - 1;
     }
-    void fillPixel(int x, int y)
+    void fillPixel(int x, int y, int color)
     {
         buffer[y * cols + 2 * x].Char.AsciiChar = buffer[y * cols + 2 * x + 1].Char.AsciiChar = ' ';
-        buffer[y * cols + 2 * x].Attributes = buffer[y * cols + 2 * x + 1].Attributes = BACKGROUND_GREEN;
+        buffer[y * cols + 2 * x].Attributes = buffer[y * cols + 2 * x + 1].Attributes = color;
     }
 
-    void fillRect(int topLeftX, int topLeftY, int width, int height)
+    void fillRect(int topLeftX, int topLeftY, int width, int height, int color)
     {
         for (int x = topLeftX; x < topLeftX + width; x++)
         {
             for (int y = topLeftY; y < topLeftY + height; y++)
             {
-                fillPixel(x, y);
+                fillPixel(x, y, color);
             }
         }
     }
