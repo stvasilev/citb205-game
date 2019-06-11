@@ -2,7 +2,6 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
-#include <iostream>
 #include <windows.h>
 #include <stdio.h>
 

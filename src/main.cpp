@@ -1,20 +1,12 @@
+#include <iostream>
 #include "graphics.h"
 #include "generator.h"
-#include <list>
+#include "point.h"
 
-using std::list;
-
-int t = 10;
 int dirX = +1; //2 cmd blocks = 1 square
 int dirY = 0;
 
 auto num = int_generator(40, 60); 
-
-struct Point
-{
-    int x, y;
-    Point(int x, int y) : x(x), y(y) {}
-};
 
 list<Point> snake;
 Point food(num() % 60, num() % 40);
