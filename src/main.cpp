@@ -2,14 +2,11 @@
 #include "graphics.h"
 #include "generator.h"
 #include "point.h"
-
-int dirX = +1; //2 cmd blocks = 1 square
-int dirY = 0;
+#include "read_input.h"
 
 auto num = int_generator(40, 60); 
 
-list<Point> snake;
-Point food(num() % 60, num() % 40);
+Point food(num() % 60, num() % 40); //first food point
 
 DWORD WINAPI render(LPVOID arg)
 {
@@ -48,11 +45,6 @@ DWORD WINAPI render(LPVOID arg)
 
 int main(void)
 {
-    HANDLE hStdin, hStdout, hNewScreenBuffer;
-    BOOL fSuccess;
-
-    INPUT_RECORD irec;
-    DWORD cc;
 
     // Get a handle to the STDOUT screen buffer to copy from and
     // create a new screen buffer to copy to.
@@ -88,41 +80,12 @@ int main(void)
 
     Graphics g(hNewScreenBuffer, 40, 60);
 
-    bool running = true;
-
     DWORD threadId;
     HANDLE thread = CreateThread(NULL, 0, render, &g, 0, &threadId);
 
     while (running)
     {
-        ReadConsoleInput(hStdin, &irec, 1, &cc);
-        if (irec.EventType == KEY_EVENT && ((KEY_EVENT_RECORD &)irec.Event).bKeyDown)
-        {
-            KEY_EVENT_RECORD krec = (KEY_EVENT_RECORD &)irec.Event;
-
-            switch (krec.wVirtualKeyCode)
-            {
-            case VK_DOWN:
-                dirX = 0;
-                dirY = +1;
-                break;
-            case VK_UP:
-                dirX = 0;
-                dirY = -1;
-                break;
-            case VK_LEFT:
-                dirX = -1;
-                dirY = 0;
-                break;
-            case VK_RIGHT:
-                dirX = 1;
-                dirY = 0;
-                break;
-            case VK_ESCAPE:
-                running = false;
-                break;
-            }
-        }
+        readInput();
     }
 
     // Restore the original active screen buffer.

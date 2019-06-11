@@ -11,4 +11,6 @@ struct Point
     Point(int x, int y) : x(x), y(y) {}
 };
 
+list<Point> snake;      //make snake
+
 #endif
