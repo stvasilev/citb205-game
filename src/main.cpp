@@ -1,31 +1,12 @@
-#include <windows.h>
-#include <stdio.h>
-
 #include "graphics.h"
-#include <iostream>
+#include "generator.h"
 #include <list>
-#include <random>
-#include <limits>
 
 using std::list;
 
 int t = 10;
 int dirX = +1; //2 cmd blocks = 1 square
 int dirY = 0;
-
-auto int_generator(int lower_bound_inclusive = std::numeric_limits<int>::min(),
-                   int upper_bound_inclusive = std::numeric_limits<int>::max() )
-{
-
-    int const lbi = lower_bound_inclusive;
-    int const ubi = upper_bound_inclusive;
-
-    static std::random_device          rd;
-    std::mt19937                       mt(rd());
-    std::uniform_int_distribution<int> dist(lbi, ubi);
-
-    return [dist, mt]() mutable { return dist(mt); };
-}
 
 auto num = int_generator(40, 60); 
 
