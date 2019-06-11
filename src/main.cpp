@@ -3,6 +3,7 @@
 #include "generator.h"
 #include "point.h"
 #include "read_input.h"
+#include "buffer_error.h"
 
 auto num = int_generator(40, 60); 
 
@@ -62,16 +63,14 @@ int main(void)
     if (hStdout == INVALID_HANDLE_VALUE ||
         hNewScreenBuffer == INVALID_HANDLE_VALUE)
     {
-        printf("CreateConsoleScreenBuffer failed - (%d)\n", GetLastError());
-        return 1;
+        return buffer_error();
     }
 
     // Make the new screen buffer the active screen buffer.
 
     if (!SetConsoleActiveScreenBuffer(hNewScreenBuffer))
     {
-        printf("SetConsoleActiveScreenBuffer failed - (%d)\n", GetLastError());
-        return 1;
+        return buffer_error();
     }
 
     snake.push_back(Point(1, 1));
@@ -92,8 +91,7 @@ int main(void)
 
     if (!SetConsoleActiveScreenBuffer(hStdout))
     {
-        printf("SetConsoleActiveScreenBuffer failed - (%d)\n", GetLastError());
-        return 1;
+        return buffer_error();
     }
 
     return 0;
