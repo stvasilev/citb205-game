@@ -4,13 +4,30 @@
 #include "graphics.h"
 #include <iostream>
 #include <list>
+#include <random>
+#include <limits>
 
 using std::list;
 
 int t = 10;
-int dirX = +1;
+int dirX = +1; //2 cmd blocks = 1 square
 int dirY = 0;
 
+auto int_generator(int lower_bound_inclusive = std::numeric_limits<int>::min(),
+                   int upper_bound_inclusive = std::numeric_limits<int>::max() )
+{
+
+    int const lbi = lower_bound_inclusive;
+    int const ubi = upper_bound_inclusive;
+
+    static std::random_device          rd;
+    std::mt19937                       mt(rd());
+    std::uniform_int_distribution<int> dist(lbi, ubi);
+
+    return [dist, mt]() mutable { return dist(mt); };
+}
+
+auto num = int_generator(40, 60); 
 
 struct Point
 {
@@ -19,13 +36,14 @@ struct Point
 };
 
 list<Point> snake;
-Point food(rand() % 60, rand() % 40);
+Point food(num() % 60, num() % 40);
 
 DWORD WINAPI render(LPVOID arg)
 {
     Graphics *g = (Graphics *)arg;
     while (true)
     {
+
         g->clearBuffer();
 
         for (auto segment : snake)
@@ -38,16 +56,20 @@ DWORD WINAPI render(LPVOID arg)
         int x = snake.front().x + dirX;
         int y = snake.front().y + dirY;
 
-        if (snake.front().x == food.x && snake.front().y == food.y) {
-            food.x = rand() % 60;
-            food.y = rand() % 40;
-        } else {
+        //if snake eats food generate new food
+        if (snake.front().x == food.x && snake.front().y == food.y)
+        {
+            food.x = num() % 60;
+            food.y = num() % 40;
+        }
+        else
+        {
             snake.pop_back();
         }
         snake.push_front(Point(x, y));
 
         g->render();
-        Sleep(200);
+        Sleep(150);
     }
 }
 
